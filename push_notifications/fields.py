@@ -4,6 +4,7 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.db import models, connection
 from django.utils.translation import ugettext_lazy as _
+import unicodedata
 
 try:
 	from django.utils.six import with_metaclass
@@ -56,6 +57,9 @@ class HexIntegerField(with_metaclass(models.SubfieldBase, models.BigIntegerField
 		return value
 
 	def to_python(self, value):
+		if isinstance(value, unicode):
+            		value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+            		return value
 		if isinstance(value, str):
 			return value
 		if value is None:
